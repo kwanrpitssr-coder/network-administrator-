@@ -16,10 +16,13 @@
       --text: #e2e8f0;
       --muted: #94a3b8;
       --accent: #38bdf8;
-      --sidebar-width: 320px;
+      --sidebar-width: 300px;
     }
 
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+      -webkit-tap-highlight-color: transparent;
+    }
 
     body {
       margin: 0;
@@ -31,6 +34,17 @@
       overflow: hidden;
     }
 
+    /* Backdrop Overlay for Mobile */
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(2px);
+      z-index: 40;
+    }
+
+    /* Sidebar Navigation */
     #sidebar {
       width: var(--sidebar-width);
       min-width: var(--sidebar-width);
@@ -38,27 +52,40 @@
       background-color: var(--surface);
       display: flex;
       flex-direction: column;
+      height: 100%;
       overflow-y: auto;
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .sidebar-header {
       padding: 1.25rem 1rem;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background-color: var(--surface);
+      z-index: 10;
     }
 
     .sidebar-header h2 {
       margin: 0;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .nav-group-title {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
       color: var(--muted);
-      padding: 1rem 1rem 0.25rem 1rem;
+      padding: 1.25rem 1rem 0.35rem 1rem;
     }
 
     .nav-list {
@@ -69,14 +96,14 @@
 
     .nav-item {
       display: block;
-      padding: 0.65rem 1rem;
+      padding: 0.7rem 1rem;
       color: var(--text);
       text-decoration: none;
-      font-size: 0.88rem;
+      font-size: 0.86rem;
       cursor: pointer;
       border-left: 3px solid transparent;
       line-height: 1.35;
-      transition: background 0.15s, border-color 0.15s;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
     }
 
     .nav-item:hover {
@@ -85,62 +112,126 @@
     }
 
     .nav-item.active {
-      background-color: rgba(56, 189, 248, 0.15);
+      background-color: rgba(56, 189, 248, 0.14);
       border-left-color: var(--accent);
       color: var(--accent);
       font-weight: 600;
     }
 
+    /* Content Area */
     #content-container {
       flex-grow: 1;
+      height: 100vh;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     .topbar {
-      padding: 0.75rem 2rem;
+      padding: 0.75rem 1.5rem;
       background-color: var(--surface);
       border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 0.75rem;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+
+    .menu-btn {
+      display: none;
+      background: #1e293b;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.65rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .menu-btn:hover {
+      background: #27354f;
+    }
+
+    #current-title {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #f1f5f9;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .raw-link {
       color: var(--muted);
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-decoration: none;
       border: 1px solid var(--border);
-      padding: 0.4rem 0.75rem;
-      border-radius: 4px;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      white-space: nowrap;
+      background: #101625;
       transition: all 0.2s;
     }
 
     .raw-link:hover {
       color: var(--text);
       border-color: var(--muted);
+      background: #182238;
     }
 
     #reader {
-      max-width: 900px;
+      max-width: 880px;
       width: 100%;
       margin: 0 auto;
-      padding: 2.5rem 2rem 5rem 2rem;
-      line-height: 1.6;
+      padding: 2rem 1.5rem 6rem 1.5rem;
+      line-height: 1.65;
+      font-size: 0.95rem;
     }
 
-    #reader h1 { border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; color: #fff; font-size: 1.8rem; }
-    #reader h2 { margin-top: 2rem; color: #f1f5f9; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.2rem; }
-    #reader h3 { color: var(--accent); }
-    #reader p, #reader li { color: #cbd5e1; }
+    /* Markdown Element Styles */
+    #reader h1 { 
+      border-bottom: 1px solid var(--border); 
+      padding-bottom: 0.5rem; 
+      color: #fff; 
+      font-size: 1.65rem; 
+      word-break: break-word;
+    }
+    #reader h2 { 
+      margin-top: 2rem; 
+      color: #f1f5f9; 
+      border-bottom: 1px solid rgba(255,255,255,0.06); 
+      padding-bottom: 0.3rem; 
+      font-size: 1.3rem;
+      word-break: break-word;
+    }
+    #reader h3 { 
+      color: var(--accent); 
+      font-size: 1.1rem; 
+      margin-top: 1.5rem;
+    }
+    #reader p, #reader li { 
+      color: #cbd5e1; 
+      line-height: 1.7;
+    }
     #reader code {
       background-color: #1e293b;
       color: #38bdf8;
       padding: 0.2rem 0.4rem;
       border-radius: 4px;
       font-size: 0.88em;
+      word-break: break-word;
     }
     #reader pre {
       background-color: #030712;
@@ -149,54 +240,120 @@
       border-radius: 6px;
       overflow-x: auto;
     }
-    #reader pre code { background: none; padding: 0; color: #e2e8f0; }
+    #reader pre code { 
+      background: none; 
+      padding: 0; 
+      color: #e2e8f0; 
+      word-break: normal;
+    }
+    
+    /* Responsive Table Container */
     #reader table {
       width: 100%;
       border-collapse: collapse;
       margin: 1.5rem 0;
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
     }
     #reader th, #reader td {
       border: 1px solid var(--border);
-      padding: 0.5rem 0.75rem;
+      padding: 0.6rem 0.85rem;
       text-align: left;
     }
     #reader th { background-color: #1a2234; }
     #reader tr:nth-child(even) { background-color: #111827; }
 
     .status-msg {
-      padding: 3rem 0;
+      padding: 4rem 1rem;
       text-align: center;
       color: var(--muted);
     }
 
-    @media (max-width: 768px) {
-      body { flex-direction: column; height: auto; overflow: visible; }
-      #sidebar { width: 100%; min-width: 100%; height: auto; }
-      #content-container { overflow-y: visible; }
+    /* Mobile & Tablet Responsiveness */
+    @media (max-width: 900px) {
+      .menu-btn {
+        display: inline-block;
+      }
+
+      #sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      #sidebar-overlay.open {
+        display: block;
+      }
+
+      .topbar {
+        padding: 0.65rem 1rem;
+      }
+
+      #reader {
+        padding: 1.5rem 1rem 5rem 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --sidebar-width: 82vw;
+      }
+
+      .raw-link {
+        padding: 0.4rem 0.55rem;
+        font-size: 0.75rem;
+      }
+
+      #current-title {
+        font-size: 0.85rem;
+      }
+
+      #reader h1 {
+        font-size: 1.4rem;
+      }
+      
+      #reader h2 {
+        font-size: 1.15rem;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- Backdrop for mobile drawer -->
+  <div id="sidebar-overlay"></div>
+
+  <!-- Navigation Sidebar Drawer -->
   <aside id="sidebar">
     <div class="sidebar-header">
-      <h2>Engineering Curriculums</h2>
+      <h2>Curriculums</h2>
     </div>
     <div id="nav-container"></div>
   </aside>
 
+  <!-- Content Reader -->
   <main id="content-container">
     <div class="topbar">
-      <span id="current-title" style="font-weight: 500; font-size: 0.9rem; color: var(--muted);">Loading...</span>
-      <a id="direct-file-link" class="raw-link" href="#" target="_blank" rel="noopener noreferrer">View Markdown File</a>
+      <div class="topbar-left">
+        <button id="menu-toggle" class="menu-btn" aria-label="Toggle Menu">☰</button>
+        <span id="current-title">Loading...</span>
+      </div>
+      <a id="direct-file-link" class="raw-link" href="#" target="_blank" rel="noopener noreferrer">View Markdown</a>
     </div>
+    
     <article id="reader">
-      <div class="status-msg">Select a document from the sidebar to view.</div>
+      <div class="status-msg">Select a document from the menu to view.</div>
     </article>
   </main>
 
   <script>
-    // ឈ្មោះ File ត្រូវគ្នានឹង Folder ជាក់ស្ដែងលើ GitHub
     const modules = [
       {
         category: "Cisco CCNA",
@@ -209,27 +366,46 @@
       {
         category: "Windows Server",
         files: [
-          { title: "Windows Server: Basic Curriculum", filename: "Windows_Server_Basic_Complete_Semester_Curriculum.md" },
-          { title: "Windows Server: Intermediate Curriculum", filename: "Windows_Server_Intermediate_Complete_Semester_Curriculum.md" },
-          { title: "Windows Server: Advanced Curriculum", filename: "Windows_Server_Advanced_Complete_Semester_Curriculum.md" },
+          { title: "Windows Server: Basic Track", filename: "Windows_Server_Basic_Complete_Semester_Curriculum.md" },
+          { title: "Windows Server: Intermediate Track", filename: "Windows_Server_Intermediate_Complete_Semester_Curriculum.md" },
+          { title: "Windows Server: Advanced Track", filename: "Windows_Server_Advanced_Complete_Semester_Curriculum.md" },
           { title: "Windows Server: Advanced (Revised)", filename: "Windows_Server_Advanced_Revised&Standardized_Semester_Curriculum.md" }
         ]
       },
       {
         category: "Integrated Infrastructure",
         files: [
-          { title: "Infrastructure: Basic Track", filename: "Windows-Server-Cisco-Network-Infrastructure-Basic.md" },
-          { title: "Infrastructure: Intermediate Track", filename: "Windows-Server-Cisco-Network-Infrastructure-Intermediate.md" },
-          { title: "Infrastructure: Advanced Track", filename: "Windows-Server-Cisco-Network-Infrastructure-Advanced.md" }
+          { title: "Infrastructure: Basic", filename: "Windows-Server-Cisco-Network-Infrastructure-Basic.md" },
+          { title: "Infrastructure: Intermediate", filename: "Windows-Server-Cisco-Network-Infrastructure-Intermediate.md" },
+          { title: "Infrastructure: Advanced", filename: "Windows-Server-Cisco-Network-Infrastructure-Advanced.md" }
         ]
       }
     ];
 
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    const menuToggle = document.getElementById("menu-toggle");
     const navContainer = document.getElementById("nav-container");
     const reader = document.getElementById("reader");
     const currentTitle = document.getElementById("current-title");
     const directFileLink = document.getElementById("direct-file-link");
+    const contentContainer = document.getElementById("content-container");
 
+    // Drawer controllers
+    function openMenu() {
+      sidebar.classList.add("open");
+      overlay.classList.add("open");
+    }
+
+    function closeMenu() {
+      sidebar.classList.remove("open");
+      overlay.classList.remove("open");
+    }
+
+    menuToggle.addEventListener("click", openMenu);
+    overlay.addEventListener("click", closeMenu);
+
+    // Render Navigation
     modules.forEach(group => {
       const groupTitle = document.createElement("div");
       groupTitle.className = "nav-group-title";
@@ -245,13 +421,15 @@
         a.className = "nav-item";
         a.textContent = file.title;
         
-        // ភ្ជាប់ទៅកាន់ network/ តាមឈ្មោះ file ត្រឹមត្រូវ
         const filePath = "network/" + file.filename;
         
         a.addEventListener("click", () => {
           document.querySelectorAll(".nav-item").forEach(item => item.classList.remove("active"));
           a.classList.add("active");
           loadFile(filePath, file.title);
+          if (window.innerWidth <= 900) {
+            closeMenu();
+          }
         });
 
         li.appendChild(a);
@@ -264,7 +442,6 @@
     async function loadFile(path, title) {
       currentTitle.textContent = title;
       
-      // Encode file name ដើម្បីកុំឱ្យមានបញ្ហាជាមួយសញ្ញា & ឬ វង់ក្រចក ()
       const parts = path.split('/');
       const encodedPath = parts[0] + '/' + encodeURIComponent(parts[1]);
       
@@ -279,7 +456,7 @@
         const text = await response.text();
         const rawHtml = marked.parse(text);
         reader.innerHTML = DOMPurify.sanitize(rawHtml);
-        document.getElementById("content-container").scrollTop = 0;
+        contentContainer.scrollTop = 0;
       } catch (err) {
         reader.innerHTML = `
           <div class="status-msg" style="color: #ef4444;">
@@ -290,7 +467,7 @@
       }
     }
 
-    // បើក file ដំបូងគេពេល web ចាប់ផ្ដើមដំណើរការ
+    // Auto load first curriculum on start
     window.addEventListener("DOMContentLoaded", () => {
       const firstItem = document.querySelector(".nav-item");
       if (firstItem) firstItem.click();
