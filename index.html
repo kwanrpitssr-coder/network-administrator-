@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Curriculum Portal</title>
   
-  <!-- Markdown parser and sanitizer -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
 
@@ -32,7 +31,6 @@
       overflow: hidden;
     }
 
-    /* Sidebar Navigation */
     #sidebar {
       width: var(--sidebar-width);
       min-width: var(--sidebar-width);
@@ -93,7 +91,6 @@
       font-weight: 600;
     }
 
-    /* Reader View */
     #content-container {
       flex-grow: 1;
       overflow-y: auto;
@@ -134,7 +131,6 @@
       line-height: 1.6;
     }
 
-    /* Markdown Styling */
     #reader h1 { border-bottom: 1px solid var(--border); padding-bottom: 0.4rem; color: #fff; font-size: 1.8rem; }
     #reader h2 { margin-top: 2rem; color: #f1f5f9; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.2rem; }
     #reader h3 { color: var(--accent); }
@@ -166,7 +162,7 @@
     }
     #reader th { background-color: #1a2234; }
     #reader tr:nth-child(even) { background-color: #111827; }
-    
+
     .status-msg {
       padding: 3rem 0;
       text-align: center;
@@ -182,7 +178,6 @@
 </head>
 <body>
 
-  <!-- Navigation Sidebar -->
   <aside id="sidebar">
     <div class="sidebar-header">
       <h2>Engineering Curriculums</h2>
@@ -190,7 +185,6 @@
     <div id="nav-container"></div>
   </aside>
 
-  <!-- Content Reader -->
   <main id="content-container">
     <div class="topbar">
       <span id="current-title" style="font-weight: 500; font-size: 0.9rem; color: var(--muted);">Loading...</span>
@@ -202,23 +196,23 @@
   </main>
 
   <script>
-    // Exact file directory mapping
+    // ឈ្មោះ File ត្រូវគ្នានឹង Folder ជាក់ស្ដែងលើ GitHub
     const modules = [
       {
         category: "Cisco CCNA",
         files: [
-          { title: "CCNA Beginner: Networking Fundamentals", filename: "Complete Semester Curriculum   Cisco Networking Fundamentals (CCNA Beginner Level).md" },
-          { title: "CCNA Intermediate: Complete Curriculum", filename: "CCNA Intermediate   Complete Semester Curriculum.md" },
-          { title: "CCNA Advanced: Complete Curriculum", filename: "CCNA Advanced   Complete Semester Curriculum.md" }
+          { title: "CCNA Beginner: Fundamentals", filename: "Complete_Semester_Curriculum_Cisco_Networking_Fundamentals_(CCNA_Beginner_Level).md" },
+          { title: "CCNA Intermediate: Curriculum", filename: "CCNA_Intermediate_Complete_Semester_Curriculum.md" },
+          { title: "CCNA Advanced: Curriculum", filename: "CCNA_Advanced_Complete_Semester_Curriculum.md" }
         ]
       },
       {
         category: "Windows Server",
         files: [
-          { title: "Windows Server: Basic Curriculum", filename: "Windows Server Basic   Complete Semester Curriculum.md" },
-          { title: "Windows Server: Intermediate Curriculum", filename: "Windows Server Intermediate   Complete Semester Curriculum.md" },
-          { title: "Windows Server: Advanced Curriculum", filename: "Windows Server Advanced   Complete Semester Curriculum.md" },
-          { title: "Windows Server: Advanced (Revised)", filename: "Windows Server Advanced   Revised & Standardized Semester Curriculum.md" }
+          { title: "Windows Server: Basic Curriculum", filename: "Windows_Server_Basic_Complete_Semester_Curriculum.md" },
+          { title: "Windows Server: Intermediate Curriculum", filename: "Windows_Server_Intermediate_Complete_Semester_Curriculum.md" },
+          { title: "Windows Server: Advanced Curriculum", filename: "Windows_Server_Advanced_Complete_Semester_Curriculum.md" },
+          { title: "Windows Server: Advanced (Revised)", filename: "Windows_Server_Advanced_Revised&Standardized_Semester_Curriculum.md" }
         ]
       },
       {
@@ -236,7 +230,6 @@
     const currentTitle = document.getElementById("current-title");
     const directFileLink = document.getElementById("direct-file-link");
 
-    // Render Navigation
     modules.forEach(group => {
       const groupTitle = document.createElement("div");
       groupTitle.className = "nav-group-title";
@@ -252,7 +245,7 @@
         a.className = "nav-item";
         a.textContent = file.title;
         
-        // Exact relative path resolution
+        // ភ្ជាប់ទៅកាន់ network/ តាមឈ្មោះ file ត្រឹមត្រូវ
         const filePath = "network/" + file.filename;
         
         a.addEventListener("click", () => {
@@ -268,22 +261,22 @@
       navContainer.appendChild(ul);
     });
 
-    // Fetch and render markdown cleanly
     async function loadFile(path, title) {
       currentTitle.textContent = title;
-      // encodeURI safely handles special characters and repeated spaces
-      const encodedPath = encodeURI(path);
+      
+      // Encode file name ដើម្បីកុំឱ្យមានបញ្ហាជាមួយសញ្ញា & ឬ វង់ក្រចក ()
+      const parts = path.split('/');
+      const encodedPath = parts[0] + '/' + encodeURIComponent(parts[1]);
+      
       directFileLink.href = encodedPath;
-
       reader.innerHTML = '<div class="status-msg">Loading document...</div>';
 
       try {
         const response = await fetch(encodedPath);
         if (!response.ok) {
-          throw new Error(`HTTP error status: ${response.status}`);
+          throw new Error(`HTTP ${response.status}: Cannot load "${encodedPath}"`);
         }
         const text = await response.text();
-        // Parse markdown and sanitize HTML output
         const rawHtml = marked.parse(text);
         reader.innerHTML = DOMPurify.sanitize(rawHtml);
         document.getElementById("content-container").scrollTop = 0;
@@ -291,14 +284,13 @@
         reader.innerHTML = `
           <div class="status-msg" style="color: #ef4444;">
             <p><strong>Failed to load document</strong></p>
-            <p style="font-size: 0.85rem; color: var(--muted);">${err.message}</p>
-            <p style="margin-top: 1rem;">Make sure the file exists in the <code>network/</code> directory and <code>.nojekyll</code> is present in root.</p>
+            <p style="font-size: 0.85rem; color: #94a3b8;">${err.message}</p>
           </div>
         `;
       }
     }
 
-    // Load first document automatically on start
+    // បើក file ដំបូងគេពេល web ចាប់ផ្ដើមដំណើរការ
     window.addEventListener("DOMContentLoaded", () => {
       const firstItem = document.querySelector(".nav-item");
       if (firstItem) firstItem.click();
